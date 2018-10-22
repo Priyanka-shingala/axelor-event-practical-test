@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<grid name="event-grid" title="Event" model="com.axelor.apps.event.db.Event">
+		<field name="name" />
+		<field name="registrationOpen" />
+		<field name="registrationClose" />
+		<field name="capacity" />
+		<field name="totalEntry" />
+		<field name="eventFees" />
+		<field name="amountCollected" />
+		<field name="totalDiscount" />
+		<field name="venue" />
+	</grid>
+
+	<form name="event-form" title="Event" model="com.axelor.apps.event.db.Event"
+		onSave="action-event-group-on-save-event" width="large">
+
+		<toolbar>
+			<button name="Import registration" title="Import Registration"
+				onClick="save,action-invoice-view-import-file" readonlyIf="id == null"
+				icon="fa-users" />
+			<button name="printEvent" onClick="save,action-event-report-event"
+				icon="fa-print" title="Print" readonlyIf="id == null" />
+		</toolbar>
+		<menubar>
+			<menu title="Send Mail" icon="fa-wrench" showTitle="true">
+				<item title="Send email" action="save,action-send-by-email-with-template"
+					readonlyIf="id == null" />
+			</menu>
+		</menubar>
+		<panel title="Event" css="panel-brown">
+			<field name="name" />
+		</panel>
+		<panel title="Event Date" css="panel-yellow">
+			<field name="startDate" />
+			<field name="endDate" />
+			<field name="registrationOpen" />
+			<field name="registrationClose" />
+		</panel>
+		<panel title="Event Amount" css="panel-red" sidebar="true">
+			<field name="totalDiscount" />
+			<field name="amountCollected" />
+			<field name="description" />
+		</panel>
+		<panel>
+			<field name="capacity" />
+			<field name="totalEntry" />
+			<field name="eventFees" />
+			<field name="venue" />
+			<field name="discounts" colSpan="12" />
+			<field name="eventRegistrations" colSpan="12" />
+		</panel>
+	</form>
+
+	<cards name="event-cards" model="com.axelor.apps.event.db.Event"
+		title="Event" orderBy="name">
+		<field name="name" />
+		<field name="registrationOpen" />
+		<field name="registrationClose" />
+		<field name="capacity" />
+		<field name="totalEntry" />
+		<hilite color="success" if="capacity == totalEntry" />
+		<template><![CDATA[	
+		<div class="span4 card-image">
+        	<strong>{{name}}</strong>
+      	</div>
+      	<div class="span8">
+      			<br>  <strong>Registration Open: {{registrationOpen}} 
+      						  Registration Close {{registrationClose}}</strong><br>
+      			Capacity : {{capacity}}<br>
+      			Total Entry : {{totalEntry}}<br>
+      	</div>
+  		]]></template>
+	</cards>
+
+	<calendar name="event-calendar" model="com.axelor.apps.event.db.Event"
+		eventStart="startDate" eventStop="endDate" title="Event">
+		<field name="name" />
+		<field name="capacity" />
+	</calendar>
+
+	<form model="com.axelor.apps.event.db.Event" title="Import registration"
+		name="import-registration-wizard-form">
+		<panel name="main">
+			<field name="$importFile" title="File" type="many-to-one"
+				widget="binary-link" target="com.axelor.meta.db.MetaFile" />
+			<button name="import" title="Import"
+				onClick="action-method-import-registration-data" readonlyIf="$importFile == null" />
+		</panel>
+	</form>
+
+	<action-group name="action-event-group-on-save-event">
+		<action name="action-event-condition-check-date" />
+		<action name="save"/>
+		<action name="action-event-method-before-days" />
+		<action name="action-event-method-generate-discount" />
+		<action name="save"/>
+		<action name="action-event-method-calculate-registration-amount"/>
+		<action name="action-event-method-calculate-amount" />
+		<action name="action-event-method-total-entry" />
+	</action-group>
+
+	<action-view name="action-invoice-view-import-file" title="Import registration"
+		model="com.axelor.apps.event.db.Event">
+		<view type="form" name="import-registration-wizard-form" />
+		<view-param name="popup" value="reload" />
+		<view-param name="show-toolbar" value="false" />
+		<view-param name="forceEdit" value="true" />
+		<view-param name="show-confirm" value="true" />
+		<context name="_showRecord" expr="eval: id" />
+	</action-view>
+
+	<action-attrs model="com.axelor.apps.event.db.Event"
+		name="action-attar-set-data-meta-file-domain">
+		<attribute name="domain" for="dataMetaFile"
+			expr="eval: &quot;self.id != ${bindMetaFile?.id}" />
+	</action-attrs>
+
+	<action-method name="action-method-import-registration-data">
+		<call class="com.axelor.apps.event.web.EventController" method="importRegistrationDataCsv" />
+	</action-method>
+
+	<action-method name="action-event-method-total-entry">
+		<call class="com.axelor.apps.event.web.EventController" method="calculateTotalEntry" />
+	</action-method>
+
+	<action-method name="action-event-method-before-days">
+		<call class="com.axelor.apps.event.web.EventController" method="chackBeforeDays" />
+	</action-method>
+
+	<action-method name="action-event-method-calculate-amount">
+		<call class="com.axelor.apps.event.web.EventController" method="calculateAmount" />
+	</action-method>
+
+	<action-method name="action-event-method-generate-discount">
+		<call class="com.axelor.apps.event.web.EventController" method="generateDiscount" />
+	</action-method>
+	
+	<action-method name="action-event-method-calculate-registration-amount">
+		<call class="com.axelor.apps.event.web.EventController" method="calculateRegistrationAmount" />
+	</action-method>
+
+	<action-condition name="action-event-condition-check-date">
+		<check field="endDate"
+			if="eval: startDate &gt; endDate &amp;&amp; endDate != null" error="Start Date should not be ahead of End Date" />
+		<check field="registrationClose" if="eval: registrationOpen &gt; registrationClose"
+			error="Registration Open Date should not be ahead of Registration Close Date" />
+		<check field="registrationOpen"
+			if="eval: registrationClose &gt; startDate.toLocalDate()" error="Registration Close Date should not be ahead of Start Date" />
+	</action-condition>
+
+	<action-report name="action-event-report-event" design="Event.rptdesign"
+		output="demo-${date}${time}" format="pdf">
+		<param name="EventId" expr="eval: id" />
+	</action-report>
+
+</object-views>

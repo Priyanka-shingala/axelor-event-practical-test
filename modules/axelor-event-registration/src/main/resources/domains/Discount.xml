@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_5.0.xsd">
+
+	<module name="event" package="com.axelor.apps.event.db" />
+
+	<entity name="Discount" lang="java" cachable="true">
+
+		<integer name="beforeDays" title="Before Days" />
+		<decimal name="discountPercent" title="Discount Percent" />
+		<decimal name="discountAmount" title="Discount Amount" />
+
+	</entity>
+
+</domain-models>

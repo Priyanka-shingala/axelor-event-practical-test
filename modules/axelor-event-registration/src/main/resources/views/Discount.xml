@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<grid name="discount-grid" title="Discount"
+		model="com.axelor.apps.event.db.Discount">
+		<field name="beforeDays" />
+		<field name="discountPercent" />
+		<field name="discountAmount" />
+	</grid>
+	<form name="discount-form" title="Discount"
+		model="com.axelor.apps.event.db.Discount">
+		<panel title="Calculate Discount">
+			<field name="beforeDays" />
+			<field name="discountPercent" onChange="action-discount-record-calculate-discount-amount" />
+			<field name="discountAmount" />
+		</panel>
+	</form>
+
+	<action-record name="action-discount-record-calculate-discount-amount"
+		model="com.axelor.apps.event.db.Discount">
+		<field name="discountAmount" expr="eval:(discountPercent*__parent__?.eventFees)/100" />
+	</action-record>
+</object-views>

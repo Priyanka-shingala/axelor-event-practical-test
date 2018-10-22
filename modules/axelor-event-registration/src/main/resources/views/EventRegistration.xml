@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<grid name="event-registration-grid" title="EventRegistration"
+		model="com.axelor.apps.event.db.EventRegistration">
+		<field name="name" />
+		<field name="email" />
+		<field name="registrationDate" />
+		<field name="amount" />
+		<field name="address" />
+		<field name="event" />
+	</grid>
+	<form name="event-registration-form" title="EventRegistration"
+		model="com.axelor.apps.event.db.EventRegistration" onNew="action-event-registration-attrs-hide-event"
+		onSave="action-event-registration-method-calculate-amount,action-event-registration-method-event-capacity"
+		onLoad="action-event-registration-attrs-hide-event">
+		<panel title="Event Registration" css="panel-blue">
+			<field name="name" />
+			<field name="email" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+				placeholder="abc@gmail.com" />
+			<field name="registrationDate"
+				onChange="action-event-registration-method-registration-date" />
+			<field name="amount" />
+			<field name="sendEmail" readonly="true" />
+			<field name="event" />
+		</panel>
+		<panel title="Address" css="panel-red">
+			<field name="address">
+				<viewer><![CDATA[
+        			<address>
+        			{{record.name}} 
+        			</address>
+       				]]>
+        		</viewer>
+				<editor x-show-titles="false">
+					<field name="name" />
+					<field name="flatNumber" />
+					<field name="street" />
+					<field name="landMark" />
+					<field name="city" />
+					<field name="country" />
+				</editor>
+			</field>
+		</panel>
+	</form>
+
+	<action-method name="action-event-registration-method-registration-date">
+		<call class="com.axelor.apps.event.web.EventRegistrationController"
+			method="checkRegistrationDate" />
+	</action-method>
+
+	<action-method name="action-event-registration-method-event-capacity">
+		<call class="com.axelor.apps.event.web.EventRegistrationController"
+			method="checkEventCapacity" />
+	</action-method>
+
+	<action-method name="action-event-registration-method-calculate-amount">
+		<call class="com.axelor.apps.event.web.EventRegistrationController"
+			method="calculateAmount" />
+	</action-method>
+
+	<action-attrs name="action-event-registration-attrs-hide-event">
+		<attribute name="hidden" for="event" expr="__parent__" />
+	</action-attrs>
+
+</object-views>
