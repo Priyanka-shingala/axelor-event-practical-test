@@ -35,19 +35,26 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
 
 	@Override
 	public BigDecimal calculateAmount(Event event, EventRegistration eventRegistration) {
-		LocalDate d2 = event.getRegistrationClose();
-		BigDecimal dis = new BigDecimal(30);
-		BigDecimal dis3 = new BigDecimal(100);
-		LocalDateTime dateTime = eventRegistration.getRegistrationDate();
-		LocalDate d1 = dateTime.toLocalDate();
-		long noOfDaysBetween = ChronoUnit.DAYS.between(d1, d2);
-		int beforeDay = (int) noOfDaysBetween;
-		Discount discount = new Discount();
-		discount.setBeforeDays(beforeDay);
-		discount.setDiscountPercent(dis);
-		discount.setDiscountAmount((discount.getDiscountPercent().multiply(event.getEventFees())).divide(dis3));
-		BigDecimal bigDecimal = event.getEventFees().subtract(discount.getDiscountAmount());
-		return bigDecimal;
+		Discount discount = event.getDiscounts().get(0);
+		if (discount != null) {
+			LocalDateTime dateTime = eventRegistration.getRegistrationDate();
+			if (dateTime != null) {
+				LocalDate dateFromDateTime = dateTime.toLocalDate();
+				LocalDate d2 = event.getRegistrationClose();
+				if (dateFromDateTime != null && d2 != null) {
+					long noOfDaysBetween = ChronoUnit.DAYS.between(dateFromDateTime, d2);
+					int beforeDay = (int) noOfDaysBetween;
+					if (beforeDay >= discount.getBeforeDays()) {
+						BigDecimal bigDecimal = event.getEventFees().subtract(discount.getDiscountAmount());
+						return bigDecimal;
+					} else {
+						BigDecimal bigDecimal = event.getEventFees();
+						return bigDecimal;
+					}
+				}
+			}
+		}
+		return new BigDecimal(0);
 	}
 
 	@Override
