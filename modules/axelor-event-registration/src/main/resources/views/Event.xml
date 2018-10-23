@@ -94,11 +94,10 @@
 
 	<action-group name="action-event-group-on-save-event">
 		<action name="action-event-condition-check-date" />
-		<action name="save"/>
+		<action name="save" />
 		<action name="action-event-method-before-days" />
-		<action name="action-event-method-generate-discount" />
-		<action name="save"/>
-		<action name="action-event-method-calculate-registration-amount"/>
+		<action name="save" />
+		<action name="action-event-method-calculate-registration-amount" />
 		<action name="action-event-method-calculate-amount" />
 		<action name="action-event-method-total-entry" />
 	</action-group>
@@ -135,14 +134,6 @@
 		<call class="com.axelor.apps.event.web.EventController" method="calculateAmount" />
 	</action-method>
 
-	<!-- <action-method name="action-event-method-generate-discount">
-		<call class="com.axelor.apps.event.web.EventController" method="generateDiscount" />
-	</action-method> -->
-	<action-method name="action-event-method-generate-discount">
-		<call class="com.axelor.apps.event.web.EventController" method="calculateDiscount" />
-	</action-method>
-	
-	
 	<action-method name="action-event-method-calculate-registration-amount">
 		<call class="com.axelor.apps.event.web.EventController" method="calculateRegistrationAmount" />
 	</action-method>

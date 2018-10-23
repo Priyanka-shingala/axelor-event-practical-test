@@ -75,19 +75,6 @@ public class EventController {
 		}
 	}
 
-	public List<Discount> calculateDiscount(ActionRequest request, ActionResponse response) {
-		BigDecimal dis3 = new BigDecimal(100);
-		Event event = request.getContext().asType(Event.class);
-		List<Discount> discounts = event.getDiscounts();
-		if (discounts.size() != 0) {
-			for (Discount discount : discounts) {
-				discount.setDiscountAmount((discount.getDiscountPercent().multiply(event.getEventFees())).divide(dis3));
-			}
-		}
-		response.setValue("discounts", discounts);
-		return null;
-	}
-
 	public void importRegistrationDataCsv(ActionRequest req, ActionResponse res) throws IOException {
 		try {
 			MetaFile metaFile = metaFileRepo
