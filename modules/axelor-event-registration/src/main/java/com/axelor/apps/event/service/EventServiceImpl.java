@@ -46,10 +46,12 @@ public class EventServiceImpl implements EventService {
 				LocalDateTime dateTime = eventRegistration.getRegistrationDate();
 				if (dateTime != null) {
 					LocalDate d1 = dateTime.toLocalDate();
+					if(d1 != null && d2 != null) {
 					long noOfDaysBetween = ChronoUnit.DAYS.between(d1, d2);
 					int beforeDay = (int) noOfDaysBetween;
 					Discount discount = calculateDiscount(event, beforeDay);
 					myList.add(discount);
+					}
 				}
 			}
 			return myList;
@@ -76,15 +78,15 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public int calculateTotalEntry(Event event) throws Exception {
 		int count = 0;
-		if(event != null) {
-		List<EventRegistration> eventRegistration = Beans.get(EventRegistrationRepository.class).all()
-				.filter("self.event = (?)", event).fetch();
-		if (eventRegistration.size() != 0) {
-			for (int i = 0; i < eventRegistration.size(); i++) {
-				count++;
+		if (event != null) {
+			List<EventRegistration> eventRegistration = Beans.get(EventRegistrationRepository.class).all()
+					.filter("self.event = (?)", event).fetch();
+			if (eventRegistration.size() != 0) {
+				for (int i = 0; i < eventRegistration.size(); i++) {
+					count++;
+				}
+				return count;
 			}
-			return count;
-		}
 		}
 		return count;
 	}
@@ -94,27 +96,29 @@ public class EventServiceImpl implements EventService {
 		List<EventRegistration> eventRegistration = event.getEventRegistrations();
 		if (eventRegistration != null) {
 			List<EventRegistration> eventRegistrationsList = new ArrayList<>();
-			Discount discount = event.getDiscounts().get(0);
-			for (EventRegistration eventRegistration2 : eventRegistration) {
-				LocalDateTime dateTime = eventRegistration2.getRegistrationDate();
-				if (dateTime != null) {
+			if (event.getDiscounts().size() != 0) {
+				Discount discount = event.getDiscounts().get(0);
+				for (EventRegistration eventRegistration2 : eventRegistration) {
+					LocalDateTime dateTime = eventRegistration2.getRegistrationDate();
+					if (dateTime != null) {
 
-					LocalDate dateFromDateTime = dateTime.toLocalDate();
-					if (((dateFromDateTime.compareTo(event.getRegistrationClose())) <= 0)
-							&& ((dateFromDateTime.compareTo(event.getRegistrationOpen())) >= 0)) {
+						LocalDate dateFromDateTime = dateTime.toLocalDate();
+						if (((dateFromDateTime.compareTo(event.getRegistrationClose())) <= 0)
+								&& ((dateFromDateTime.compareTo(event.getRegistrationOpen())) >= 0)) {
 
-						BigDecimal bigDecimal = event.getEventFees().subtract(discount.getDiscountAmount());
-						eventRegistration2.setAmount(bigDecimal);
-						eventRegistrationsList.add(eventRegistration2);
+							BigDecimal bigDecimal = event.getEventFees().subtract(discount.getDiscountAmount());
+							eventRegistration2.setAmount(bigDecimal);
+							eventRegistrationsList.add(eventRegistration2);
+						} else {
+							throw new Exception(I18n.get(IExceptionMessage.REGISTRATION_DATE) + " " + dateFromDateTime);
+						}
+
 					} else {
-						throw new Exception(I18n.get(IExceptionMessage.REGISTRATION_DATE) + " " + dateFromDateTime);
+						eventRegistrationsList.add(eventRegistration2);
 					}
-
-				} else {
-					eventRegistrationsList.addAll(eventRegistration);
 				}
+				return eventRegistrationsList;
 			}
-			return eventRegistrationsList;
 		}
 		return eventRegistration;
 	}

@@ -37,7 +37,6 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
 	public BigDecimal calculateAmount(Event event, EventRegistration eventRegistration) {
 		LocalDate d2 = event.getRegistrationClose();
 		BigDecimal dis = new BigDecimal(30);
-		BigDecimal dis2 = new BigDecimal(50);
 		BigDecimal dis3 = new BigDecimal(100);
 		LocalDateTime dateTime = eventRegistration.getRegistrationDate();
 		LocalDate d1 = dateTime.toLocalDate();
@@ -45,11 +44,7 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
 		int beforeDay = (int) noOfDaysBetween;
 		Discount discount = new Discount();
 		discount.setBeforeDays(beforeDay);
-		if (beforeDay > 5) {
-			discount.setDiscountPercent(dis2);
-		} else {
-			discount.setDiscountPercent(dis);
-		}
+		discount.setDiscountPercent(dis);
 		discount.setDiscountAmount((discount.getDiscountPercent().multiply(event.getEventFees())).divide(dis3));
 		BigDecimal bigDecimal = event.getEventFees().subtract(discount.getDiscountAmount());
 		return bigDecimal;
@@ -62,7 +57,5 @@ public class EventRegistrationServiceImpl implements EventRegistrationService {
 			eventRegistration2.setSendEmail(Boolean.TRUE);
 			Beans.get(EventRegistrationRepository.class).save(eventRegistration2);
 		}
-
 	}
-
 }

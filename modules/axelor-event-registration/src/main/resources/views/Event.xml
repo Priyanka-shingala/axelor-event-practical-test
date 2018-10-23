@@ -149,7 +149,7 @@
 		<check field="registrationClose" if="eval: registrationOpen &gt; registrationClose"
 			error="Registration Open Date should not be ahead of Registration Close Date" />
 		<check field="registrationOpen"
-			if="eval: registrationClose &gt; startDate.toLocalDate()" error="Registration Close Date should not be ahead of Start Date" />
+			if="eval: registrationClose &gt; startDate?.toLocalDate()" error="Registration Close Date should not be ahead of Start Date" />
 	</action-condition>
 
 	<action-report name="action-event-report-event" design="Event.rptdesign"

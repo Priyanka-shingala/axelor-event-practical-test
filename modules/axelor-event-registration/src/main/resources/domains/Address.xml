@@ -6,18 +6,37 @@
 	<module name="event" package="com.axelor.apps.event.db" />
 
 	<entity name="Address" lang="java" cachable="true">
-		
-		<string name="flatNumber" title="Flat/House No"/>
+
+		<string name="flatNumber" title="Flat/House No" />
 		<string name="street" title="Street" />
 		<string name="landMark" title="LandMark" />
-		<string name="city" title="City"/>
-		<string name="country" title="Country"/>
+		<string name="city" title="City" />
+		<string name="country" title="Country" />
 		<string name="name" title="Full Name" readonly="true">
 		<![CDATA[
-	    	return flatNumber+"-"+ street + " , " + landMark + "," + city + ","+ country ;    
-	    ]]>
-	    </string>
 		
+		if(flatNumber == null && street == null && landMark == null && city == null && country == null){
+    			return null ;  
+    		}
+		if(flatNumber == null){
+    			return street + " , " + landMark + "," + city + ","+ country ;  
+    		}
+    	if(street == null){
+    			return flatNumber + " , " + landMark + "," + city + ","+ country ;  
+    		}
+    	if(landMark == null){
+    			return flatNumber+"-"+ street + " , " + city + ","+ country ;  
+    		}
+    	if(city == null){
+    			return flatNumber+"-"+ street + " , " + landMark + "," +  country ;  
+    		}
+    	if(country == null){
+    			return flatNumber+"-"+ street + " , " + landMark + "," + city;
+    		}
+	    return flatNumber+"-"+ street + " , " + landMark + "," + city + ","+ country ;    
+	    ]]>
+		</string>
+
 	</entity>
 
 </domain-models>

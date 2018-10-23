@@ -89,12 +89,12 @@ public class EventController {
 			File csvFile = MetaFiles.getPath(metaFile).toFile();
 
 			if (Files.getFileExtension(csvFile.getName()).equals("csv")) {
-
 				CSVReader reader = new CSVReader(new FileReader(csvFile));
 				String[] header = reader.readNext();
 				List<String> headers = Arrays.asList(header);
 				List<String> expectedHeaders = Arrays.asList("name", "email", "registrationDate", "amount", "address",
 						"event");
+
 				if (expectedHeaders.equals(headers)) {
 					String config = "/data-csv-import/input-config.xml";
 					InputStream inputStream = this.getClass().getResourceAsStream(config);
@@ -110,7 +110,6 @@ public class EventController {
 					event = eventService.importRegistrationDataCsv(event);
 
 					if (event.getCapacity() > event.getTotalEntry()) {
-
 						CSVImporter csvImporter = new CSVImporter(configFile.getAbsolutePath(),
 								importFile.getAbsolutePath());
 						csvImporter.addListener(new Listener() {
@@ -126,7 +125,6 @@ public class EventController {
 								Event event2 = eventService.importRegistrationDataCsv(event);
 								try {
 									int count = eventService.calculateTotalEntry(event2);
-
 									if (event2.getCapacity() > count) {
 
 										((EventRegistration) bean).setEvent(event2);
@@ -137,7 +135,7 @@ public class EventController {
 										eventRegistrations = eventService
 												.importRegistrationDataSave(eventRegistrations);
 									} else {
-										res.setError(I18n.get(IExceptionMessage.HALF_EVENT_CAPACITY));
+										res.setFlash(I18n.get(IExceptionMessage.HALF_EVENT_CAPACITY));
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -156,9 +154,7 @@ public class EventController {
 						res.setError(I18n.get(IExceptionMessage.EVENT_CAPACITY));
 					}
 					FileUtils.forceDelete(configFile);
-
 					FileUtils.forceDelete(tempDir);
-
 					if (metaFile != null) {
 						metaFileRepo.remove(metaFile);
 					}

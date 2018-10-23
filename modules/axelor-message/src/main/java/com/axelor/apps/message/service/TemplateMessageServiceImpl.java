@@ -47,6 +47,7 @@ import com.google.inject.persist.Transactional;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -137,6 +138,7 @@ public class TemplateMessageServiceImpl implements TemplateMessageService {
 				String email = eventRegistration.getEmail();
 				list.add(email);
 			}
+			list.removeAll(Collections.singleton(null));
 			String allEmail = StringUtils.join(list, ',');
 			if (!Strings.isNullOrEmpty(allEmail)) {
 				maker.setTemplate(allEmail);
