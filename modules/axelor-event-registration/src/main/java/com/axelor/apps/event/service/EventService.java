@@ -10,7 +10,7 @@ public interface EventService {
 
 	public void chackBeforeDays(Event event) throws Exception;
 
-	public List<Discount> generateDiscount(Event event);
+	//public List<Discount> generateDiscount(Event event);
 
 	public Event importRegistrationDataCsv(Event event);
 
@@ -19,4 +19,6 @@ public interface EventService {
 	public List<EventRegistration> importRegistrationDataSave(List<EventRegistration> eventRegistration);
 
 	public List<EventRegistration> calculateRegistrationAmount(Event event) throws Exception;
+	
+	//public List<Discount> calculateDiscount(Event event);
 }

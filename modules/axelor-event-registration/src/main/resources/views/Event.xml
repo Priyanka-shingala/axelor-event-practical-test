@@ -135,9 +135,13 @@
 		<call class="com.axelor.apps.event.web.EventController" method="calculateAmount" />
 	</action-method>
 
-	<action-method name="action-event-method-generate-discount">
+	<!-- <action-method name="action-event-method-generate-discount">
 		<call class="com.axelor.apps.event.web.EventController" method="generateDiscount" />
+	</action-method> -->
+	<action-method name="action-event-method-generate-discount">
+		<call class="com.axelor.apps.event.web.EventController" method="calculateDiscount" />
 	</action-method>
+	
 	
 	<action-method name="action-event-method-calculate-registration-amount">
 		<call class="com.axelor.apps.event.web.EventController" method="calculateRegistrationAmount" />

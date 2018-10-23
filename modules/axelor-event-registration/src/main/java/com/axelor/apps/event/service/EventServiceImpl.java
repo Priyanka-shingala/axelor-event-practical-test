@@ -37,29 +37,6 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public List<Discount> generateDiscount(Event event) {
-		LocalDate d2 = event.getRegistrationClose();
-		List<Discount> myList = new ArrayList<Discount>();
-		List<EventRegistration> eventRegistrations = event.getEventRegistrations();
-		if (eventRegistrations != null) {
-			for (EventRegistration eventRegistration : eventRegistrations) {
-				LocalDateTime dateTime = eventRegistration.getRegistrationDate();
-				if (dateTime != null) {
-					LocalDate d1 = dateTime.toLocalDate();
-					if(d1 != null && d2 != null) {
-					long noOfDaysBetween = ChronoUnit.DAYS.between(d1, d2);
-					int beforeDay = (int) noOfDaysBetween;
-					Discount discount = calculateDiscount(event, beforeDay);
-					myList.add(discount);
-					}
-				}
-			}
-			return myList;
-		}
-		return null;
-	}
-
-	@Override
 	public Event importRegistrationDataCsv(Event event) {
 		Long id = event.getId();
 		Event event2 = Beans.get(EventRepository.class).all().filter("self.id = (?)", id).fetchOne();
@@ -101,18 +78,28 @@ public class EventServiceImpl implements EventService {
 				for (EventRegistration eventRegistration2 : eventRegistration) {
 					LocalDateTime dateTime = eventRegistration2.getRegistrationDate();
 					if (dateTime != null) {
-
 						LocalDate dateFromDateTime = dateTime.toLocalDate();
-						if (((dateFromDateTime.compareTo(event.getRegistrationClose())) <= 0)
-								&& ((dateFromDateTime.compareTo(event.getRegistrationOpen())) >= 0)) {
+						LocalDate d2 = event.getRegistrationClose();
+						if (dateFromDateTime != null && d2 != null) {
+							long noOfDaysBetween = ChronoUnit.DAYS.between(dateFromDateTime, d2);
+							int beforeDay = (int) noOfDaysBetween;
 
-							BigDecimal bigDecimal = event.getEventFees().subtract(discount.getDiscountAmount());
-							eventRegistration2.setAmount(bigDecimal);
-							eventRegistrationsList.add(eventRegistration2);
-						} else {
-							throw new Exception(I18n.get(IExceptionMessage.REGISTRATION_DATE) + " " + dateFromDateTime);
+							if (((dateFromDateTime.compareTo(event.getRegistrationClose())) <= 0)
+									&& ((dateFromDateTime.compareTo(event.getRegistrationOpen())) >= 0)) {
+								if (beforeDay >= discount.getBeforeDays()) {
+									BigDecimal bigDecimal = event.getEventFees().subtract(discount.getDiscountAmount());
+									eventRegistration2.setAmount(bigDecimal);
+									eventRegistrationsList.add(eventRegistration2);
+								} else {
+									BigDecimal bigDecimal = event.getEventFees();
+									eventRegistration2.setAmount(bigDecimal);
+									eventRegistrationsList.add(eventRegistration2);
+								}
+							} else {
+								throw new Exception(
+										I18n.get(IExceptionMessage.REGISTRATION_DATE) + " " + dateFromDateTime);
+							}
 						}
-
 					} else {
 						eventRegistrationsList.add(eventRegistration2);
 					}
@@ -121,15 +108,5 @@ public class EventServiceImpl implements EventService {
 			}
 		}
 		return eventRegistration;
-	}
-
-	public Discount calculateDiscount(Event event, int beforeDay) {
-		BigDecimal dis = new BigDecimal(30);
-		BigDecimal dis3 = new BigDecimal(100);
-		Discount discount = new Discount();
-		discount.setBeforeDays(beforeDay);
-		discount.setDiscountPercent(dis);
-		discount.setDiscountAmount((discount.getDiscountPercent().multiply(event.getEventFees())).divide(dis3));
-		return discount;
 	}
 }
